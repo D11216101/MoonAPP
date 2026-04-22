@@ -5,66 +5,27 @@
     <title>月語 Moon Whisper - 維運管理中心</title>
     <style>
         :root { --primary: #6a4c93; --bg: #f4f7f6; --white: #ffffff; --danger: #d63031; --success: #27ae60; }
-        
-        body { 
-            font-family: "Microsoft JhengHei", sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            padding: 20px;
-            color: #333;
-        }
-
-        /* 頂部標題列 */
-        .top-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding: 10px 0;
-            border-bottom: 2px solid var(--primary);
-        }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 10px 0; border-bottom: 2px solid var(--primary); }
         .logo-title { font-size: 28px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-
-        /* 數據小卡排版 */
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 20px; 
-            margin-bottom: 25px; 
-        }
-        .stat-card { 
-            background: var(--white); 
-            padding: 20px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-            text-align: center; 
-        }
-        .stat-card h4 { margin: 0; color: #777; font-size: 14px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: var(--white); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
         .stat-card .num { font-size: 32px; font-weight: bold; color: var(--primary); margin: 10px 0; }
-
-        /* 功能卡片 */
-        .card { 
-            background: var(--white); 
-            border-radius: 12px; 
-            padding: 25px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-            margin-bottom: 25px; 
-        }
+        .card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
         h3 { margin-top: 0; border-left: 6px solid var(--primary); padding-left: 15px; font-size: 20px; margin-bottom: 20px; }
-
-        /* 表格樣式 */
         table { width: 100%; border-collapse: collapse; }
         th, td { text-align: left; padding: 15px; border-bottom: 1px solid #eee; font-size: 15px; }
         th { background: #fcfaff; color: #555; }
-
-        /* 按鈕樣式 */
         .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 14px; transition: 0.3s; font-weight: bold; }
         .btn-backup { background: var(--success); color: white; padding: 12px 24px; font-size: 16px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-warn { background: #f39c12; color: white; }
+        .btn-danger { background: var(--danger); color: white; }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-
-        .system-info { text-align: center; color: #999; font-size: 13px; margin-top: 40px; padding-bottom: 20px; }
+        .push-row { display: flex; gap: 20px; }
+        .push-input-group { flex: 1; display: flex; flex-direction: column; }
+        input, textarea, select { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; }
+        .system-info { text-align: center; color: #999; font-size: 13px; margin-top: 40px; }
     </style>
 </head>
 <body>
@@ -79,8 +40,39 @@
         <div class="stat-card"><h4>今日活躍</h4><div class="num">356</div></div>
         <div class="stat-card"><h4>AI 諮詢量</h4><div class="num">8,942</div></div>
         <div class="stat-card" style="border-bottom: 4px solid var(--danger);">
-            <h4>待處理異常</h4><div class="num" style="color:var(--danger)">5</div>
+            <h4>待處理異常</h4><div class="num" id="anomaly-count" style="color:var(--danger)">2</div>
         </div>
+    </div>
+
+    <div class="card" id="anomaly-section">
+        <h3 style="border-left-color: var(--danger);">🚨 異常數據監測與處理</h3>
+        <table>
+            <thead>
+                <tr><th>異常類型</th><th>使用者 UID</th><th>偵測時間</th><th>狀態</th><th>管理操作</th></tr>
+            </thead>
+            <tbody>
+                <tr id="row-1">
+                    <td><b style="color:var(--danger)">心率過高 (115 bpm)</b></td>
+                    <td>U_7721</td>
+                    <td>2026/04/22 10:15</td>
+                    <td>未處理</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="alert('已發送關懷推播至 U_7721')">📢 關懷推播</button>
+                        <button class="btn btn-danger" onclick="resolveAnomaly('row-1')">✅ 標記已處理</button>
+                    </td>
+                </tr>
+                <tr id="row-2">
+                    <td><b style="color:var(--danger)">長達 3 天未同步數據</b></td>
+                    <td>U_6654</td>
+                    <td>2026/04/21 23:50</td>
+                    <td>未處理</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="alert('已發送同步提醒至 U_6654')">📢 提醒同步</button>
+                        <button class="btn btn-danger" onclick="resolveAnomaly('row-2')">✅ 標記已處理</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
     <div class="card">
@@ -92,50 +84,45 @@
             <tbody>
                 <tr>
                     <td>「流感疫苗會導致經期提前嗎？」</td>
-                    <td style="color:var(--danger); font-weight:bold;">42% (信心低)</td>
-                    <td><button class="btn btn-primary">＋ 補充醫學百科資料</button></td>
-                </tr>
-                <tr>
-                    <td>「心率高於 100 且持續 2 小時...」</td>
-                    <td style="color:var(--danger); font-weight:bold;">35% (信心低)</td>
-                    <td><button class="btn btn-primary">＋ 新增異常指引手冊</button></td>
+                    <td style="color:var(--danger); font-weight:bold;">42%</td>
+                    <td><button class="btn btn-primary">＋ 補充資料</button></td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <div class="card">
-        <h3>👥 使用者管理與帳號救援</h3>
-        <table>
-            <thead>
-                <tr><th>UID</th><th>最後同步時間</th><th>當前生理階段</th><th>快速操作</th></tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>U_8821</td>
-                    <td>3 分鐘前</td>
-                    <td>黃體期</td>
-                    <td>
-                        <button class="btn btn-warn" onclick="alert('已發送重設連結至信箱！')">🔑 密碼救援</button>
-                        <button class="btn" style="background:#eee" onclick="alert('CSV 匯出中...')">💾 數據匯出</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>U_9012</td>
-                    <td>剛剛</td>
-                    <td>行經期</td>
-                    <td>
-                        <button class="btn btn-warn" onclick="alert('已發送重設連結至信箱！')">🔑 密碼救援</button>
-                        <button class="btn" style="background:#eee" onclick="alert('CSV 匯出中...')">💾 數據匯出</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <h3>📣 FCM 即時訊息推播 (手動發送)</h3>
+        <div class="push-row">
+            <div class="push-input-group">
+                <label>通知標題</label>
+                <input type="text" id="push-title" placeholder="例如：健康小叮嚀">
+                <label style="margin-top: 15px;">對象設定</label>
+                <select><option>全體用戶</option><option>特定異常用戶</option></select>
+            </div>
+            <div class="push-input-group">
+                <label>通知內容</label>
+                <textarea id="push-content" rows="4" placeholder="請輸入推播訊息內容..."></textarea>
+                <button class="btn btn-primary" style="margin-top: 15px; padding: 12px;" onclick="sendPush()">🚀 立即發送推播</button>
+            </div>
+        </div>
     </div>
 
     <div class="system-info">
         伺服器節點：Llama 3 (Ollama) | 同步頻率：每 5 分鐘一次 | 系統狀態：● 正常運行
     </div>
 
+    <script>
+        function resolveAnomaly(rowId) {
+            if(confirm('確認已聯繫用戶或確認該異常已排除？')) {
+                document.getElementById(rowId).style.display = 'none';
+                let count = document.getElementById('anomaly-count');
+                count.innerText = parseInt(count.innerText) - 1;
+            }
+        }
+        function sendPush() {
+            alert('推播發送成功！');
+        }
+    </script>
 </body>
 </html>
