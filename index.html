@@ -105,16 +105,22 @@
         </table>
     </div>
 
-    <div class="card">
-        <h3>📣 系統公告發送</h3>
+   <div class="card">
+        <h3>📣 系統推播發送</h3>
         <div class="push-row">
             <div class="push-input-group">
-                <input type="text" id="push-title" placeholder="標題">
-                <select style="margin-top:10px"><option>全體用戶</option><option>特定地區</option></select>
+                <label style="font-size: 13px; color: #666;">通知標題</label>
+                <input type="text" id="push-title" placeholder="例如：健康小叮嚀">
+                <label style="font-size: 13px; color: #666; margin-top: 15px;">發送對象</label>
+                <select id="push-target">
+                    <option>全體用戶</option>
+                    <option>特定用戶 (需輸入 UID)</option>
+                </select>
             </div>
             <div class="push-input-group">
-                <textarea rows="3" placeholder="內容"></textarea>
-                <button class="btn btn-primary" style="margin-top:10px" onclick="alert('推播發送成功！')">🚀 立即發送</button>
+                <label style="font-size: 13px; color: #666;">訊息內容</label>
+                <textarea rows="3" id="push-content" placeholder="請輸入要傳達給使用者的訊息..."></textarea>
+                <button class="btn btn-primary" style="margin-top:15px; padding: 12px;" onclick="sendPush()">🚀 立即發送推播</button>
             </div>
         </div>
     </div>
